@@ -944,6 +944,15 @@ CODE
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+<<<<<<< HEAD
+=======
+#include "imgui.h"
+
+
+#include "Types/Color.h"
+#ifndef IMGUI_DISABLE
+
+>>>>>>> 52011745 (Update imgui & Migrate imgui to submodule)
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
@@ -1160,6 +1169,10 @@ static void             UpdateViewportPlatformMonitor(ImGuiViewportP* viewport);
 #ifndef GImGui
 ImGuiContext*   GImGui = NULL;
 #endif
+
+ImVec4::ImVec4(const Color& f) { x = f.r; y = f.g; z = f.b; w = f.a; }
+
+ImVec4::operator Color() const { return Color(x,y,z,w); }
 
 // Memory Allocator functions. Use SetAllocatorFunctions() to change them.
 // - You probably don't want to modify that mid-program, and if you use global/static e.g. ImVector<> instances you may need to keep them accessible during program destruction.
