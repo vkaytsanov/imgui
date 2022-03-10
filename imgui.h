@@ -259,7 +259,7 @@ typedef void*   (*ImGuiMemAllocFunc)(size_t sz, void* user_data);               
 typedef void    (*ImGuiMemFreeFunc)(void* ptr, void* user_data);                // Function signature for ImGui::SetAllocatorFunctions()
 
 template <typename T>
-class Vector2;
+struct Vector2;
 // ImVec2: 2D vector used to store positions, sizes etc. [Compile-time configurable type]
 // This is a frequently used type in the API. Consider using IM_VEC2_CLASS_EXTRA to create implicit cast from/to our preferred type.
 IM_MSVC_RUNTIME_CHECKS_OFF
@@ -276,7 +276,7 @@ struct ImVec2
 };
 
 template <typename T>
-class Vector4;
+struct Vector4;
 
 struct Color;
 // ImVec4: 4D vector used to store clipping rectangles, colors etc. [Compile-time configurable type]

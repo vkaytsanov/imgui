@@ -114,7 +114,7 @@
 
 #define IM_VEC2_CLASS_EXTRA                                                 \
         template <typename T>                                               \
-        ImVec2(const Vector2<T>& f) { x = f.x; y = f.y;}                    \
+        ImVec2(const Vector2<T>& f) { x = f.X; y = f.Y;}                    \
                                                                             \
         template <typename T>                                               \
         IMGUI_API operator Vector2<T>() const { return Vector2<T>(x,y);     }
@@ -124,7 +124,7 @@
         IMGUI_API operator Color() const;                                   \
                                                                             \
         template <typename T>                                               \
-        ImVec4(const Vector4<T>& f) { x = f.x; y = f.y; z = f.z; w = f.w; } \
+        ImVec4(const Vector4<T>& f) { x = f.X; y = f.Y; z = f.Z; w = f.W; } \
                                                                             \
         template <typename T>                                               \
         IMGUI_API operator Vector4<T>() const { return Vector4<T>(x,y,z,w); }
