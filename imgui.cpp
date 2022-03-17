@@ -1170,7 +1170,7 @@ static void             UpdateViewportPlatformMonitor(ImGuiViewportP* viewport);
 ImGuiContext*   GImGui = NULL;
 #endif
 
-ImVec4::ImVec4(const Color& f) { x = f.r; y = f.g; z = f.b; w = f.a; }
+ImVec4::ImVec4(const Color& f) { x = f.R; y = f.G; z = f.B; w = f.A; }
 
 ImVec4::operator Color() const { return Color(x,y,z,w); }
 

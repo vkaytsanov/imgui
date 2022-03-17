@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "Types/ResourceTypes.h"
 #include "Types/String.h"
+#include "Math/Vector4.h"
 
 namespace ImGuiEx
 {
@@ -58,10 +59,31 @@ bool InputResizableString(const char* label, String* inStr, ImGuiInputTextFlags 
 	                        inStr);
 }
 
-bool InputVector4f(class Object* instance, const Field* prop)
+
+bool InputSubClassBegin(const Field* field)
+{
+    SameLine(12);
+    AlignTextToFramePadding();
+    return ImGui::TreeNode(field->GetEditorName());
+}
+
+void InputSubClassEnd()
+{
+    ImGui::TreePop();
+}
+
+void InputSubArrayItem(uint32 index)
+{
+    SameLine(25);
+    AlignTextToFramePadding();
+    Text("%d", index);
+    SameLine(25);
+}
+
+
+bool Input(Vector4f& prop, const Field* field)
 {
 	bool result = false;
-	auto& vec = prop->GetValue<Vector4f>(instance);
 	auto inputFlags = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsDecimal;
 
     PushDefaultInputStyle();
@@ -69,18 +91,18 @@ bool InputVector4f(class Object* instance, const Field* prop)
 
     SameLine(12);
     AlignTextToFramePadding();
-    Text("%s", prop->GetEditorName());
+    Text("%s", field->GetEditorName());
 
     const char* axes[] = { "X", "Y", "Z" };
     for (uint32 i = 0; i < 3; i++)
     {
-        PushID(prop->GetEditorName() + i + 1);
+        PushID(field->GetEditorName() + i + 1);
         SameLine(75.f * (static_cast<float>(i) + 1.f));
         AlignTextToFramePadding();
         TextUnformatted(axes[i]);
         SameLine(0, 5);
 
-        result |= InputFloat("", &vec[i], 0, 0, "%.3f", inputFlags);
+        result |= InputFloat("", &prop[i], 0, 0, "%.3f", inputFlags);
 
         PopID();
     }
@@ -93,24 +115,23 @@ bool InputVector4f(class Object* instance, const Field* prop)
 	return result;
 }
 
-bool InputString(Object* instance, const Field* prop)
+bool Input(String& prop, const Field* field)
 {
 	bool result = false;
 	PushDefaultInputStyle();
 
     // Copy here to avoid immediate renaming of the field
-	String buffer = prop->GetValue<String>(instance).CStr();
+	String buffer = prop;
 	SameLine(12);
 	AlignTextToFramePadding();
-	Text("%s", prop->GetEditorName());
+	Text("%s", field->GetEditorName());
 	SameLine(80);
 
-	PushID(prop->GetEditorName());
+	PushID(field->GetEditorName());
 	if (InputText("", buffer.Data(), 32,
 	              ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue))
 	{
-		auto& str = prop->GetValue<String>(instance);
-		str = buffer.CStr();
+		prop = buffer.CStr();
 		result = true;
 	}
 
@@ -120,13 +141,12 @@ bool InputString(Object* instance, const Field* prop)
 	return result;
 }
 
-bool InputMaterial(Object* instance, const Field* prop)
+bool InputMaterial(Material& prop, const Field* field)
 {
 	// TODO: Implement this
-	auto material = prop->GetValue<Material*>(instance);
-	if (material != nullptr && material->Albedo)
+	if (prop.Albedo)
 	{
-		Image(material->Albedo->GetColorAttachment(),
+		Image(prop.Albedo->GetColorAttachment(),
 		      Vector2f(64, 64),
 		      Vector2f(1, 0),
 		      Vector2f(0, 1));
@@ -135,11 +155,27 @@ bool InputMaterial(Object* instance, const Field* prop)
 	return false;
 }
 
-bool InputMeshData(Object* instance, const Field* prop)
+bool Input(Color& prop, const Field* field)
 {
-	// TODO:
-	return false;
+    ImGuiColorEditFlags flags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaPreview;
+
+    Color copy = prop;
+    SameLine(12);
+    AlignTextToFramePadding();
+    Text("%s", field->GetEditorName());
+    SameLine(80);
+    if (ImGui::ColorEdit4("", &copy[0], flags))
+    {
+        prop.R = copy.R;
+        prop.G = copy.G;
+        prop.B = copy.B;
+        prop.A = copy.A;
+        return true;
+    }
+    return false;
 }
+
+
 
 bool IconButton(const char* icon, const char* tooltip)
 {
@@ -154,28 +190,6 @@ bool IconButton(const char* icon, const char* tooltip)
 	PopStyleVar();
 	return res;
 }
-
-bool InputColor(Object* instance, const Field* prop)
-{
-	Color& color = prop->GetValue<Color>(instance);
-	ImGuiColorEditFlags flags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaPreview;
-
-	float colors[4] = { color.r, color.g, color.b, color.a };
-	SameLine(12);
-	AlignTextToFramePadding();
-	Text("%s", prop->GetEditorName());
-	SameLine(80);
-	if (ImGui::ColorEdit4("", colors, flags))
-	{
-		color.r = colors[0];
-		color.g = colors[1];
-		color.b = colors[2];
-		color.a = colors[3];
-		return true;
-	}
-	return false;
-}
-
 
 bool ButtonDisabled(const char* label, const ImVec2& size, bool condition)
 {
