@@ -11,11 +11,11 @@ using namespace ImGui;
 
 void PushDefaultInputStyle()
 {
-	PushStyleColor(ImGuiCol_FrameBg, Color::FromHex(0x2a2a2aFF));
-	PushStyleColor(ImGuiCol_Border, Color::FromHex(0x202020FF));
+	PushStyleColor(ImGuiCol_FrameBg, Color::DARK_GREY);
+	PushStyleColor(ImGuiCol_Border, Color::VERY_DARK_GREY);
 	PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
 	PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
-	PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
+	PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3.5));
 }
 
 void PopDefaultInputStyle()
@@ -74,9 +74,8 @@ void InputSubClassEnd()
 
 void InputSubArrayItem(uint32 index)
 {
-    SameLine(25);
-    AlignTextToFramePadding();
-    Text("%d", index);
+    String number = String::Printf("%d", index);
+    TextAligned(number.CStr(), 25);
     SameLine(25);
 }
 
@@ -89,17 +88,13 @@ bool Input(Vector4f& prop, const Field* field)
     PushDefaultInputStyle();
 	PushItemWidth(55);
 
-    SameLine(12);
-    AlignTextToFramePadding();
-    Text("%s", field->GetEditorName());
+    TextAligned(field->GetEditorName(), 12);
 
     const char* axes[] = { "X", "Y", "Z" };
     for (uint32 i = 0; i < 3; i++)
     {
         PushID(field->GetEditorName() + i + 1);
-        SameLine(75.f * (static_cast<float>(i) + 1.f));
-        AlignTextToFramePadding();
-        TextUnformatted(axes[i]);
+        TextAligned(axes[i], 75.f * (static_cast<float>(i) + 1.f));
         SameLine(0, 5);
 
         result |= InputFloat("", &prop[i], 0, 0, "%.3f", inputFlags);
@@ -110,8 +105,6 @@ bool Input(Vector4f& prop, const Field* field)
     PopDefaultInputStyle();
 	PopItemWidth();
 
-
-	NewLine();
 	return result;
 }
 
@@ -122,9 +115,7 @@ bool Input(String& prop, const Field* field)
 
     // Copy here to avoid immediate renaming of the field
 	String buffer = prop;
-	SameLine(12);
-	AlignTextToFramePadding();
-	Text("%s", field->GetEditorName());
+    TextAligned(field->GetEditorName(), 12);
 	SameLine(80);
 
 	PushID(field->GetEditorName());
@@ -159,17 +150,10 @@ bool Input(Color& prop, const Field* field)
 {
     ImGuiColorEditFlags flags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaPreview;
 
-    Color copy = prop;
-    SameLine(12);
-    AlignTextToFramePadding();
-    Text("%s", field->GetEditorName());
+    TextAligned(field->GetEditorName(), 12);
     SameLine(80);
-    if (ImGui::ColorEdit4("", &copy[0], flags))
+    if (ImGui::ColorEdit4("", &prop[0], flags))
     {
-        prop.R = copy.R;
-        prop.G = copy.G;
-        prop.B = copy.B;
-        prop.A = copy.A;
         return true;
     }
     return false;
@@ -177,17 +161,19 @@ bool Input(Color& prop, const Field* field)
 
 
 
-bool IconButton(const char* icon, const char* tooltip)
+bool IconButton(const char* icon, const ImVec2& size, const char* tooltip)
 {
-	PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-	PushStyleColor(ImGuiCol_Button, GetStyle().Colors[ImGuiCol_WindowBg]);
-	bool res = SmallButton(icon);
-	if (IsItemHovered())
+    PushStyleColor(ImGuiCol_Button, Color::LIGHT_GREY);
+    PushStyleColor(ImGuiCol_Border, Color::VERY_DARK_GREY);
+    PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
+    PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
+    bool res = ImGui::Button(icon, size);
+    if (IsItemHovered())
 	{
 		SetTooltip("%s", tooltip);
 	}
-	PopStyleColor();
-	PopStyleVar();
+    PopStyleVar(2);
+    PopStyleColor(2);
 	return res;
 }
 
@@ -199,4 +185,53 @@ bool ButtonDisabled(const char* label, const ImVec2& size, bool condition)
     return result;
 }
 
+void TextIcon(const char* icon, const char* text)
+{
+    ImGui::SameLine(0, 4.0f);
+    ImGui::TextUnformatted(icon);
+
+    ImGui::SameLine(0, 4.0f);
+    ImGui::TextUnformatted(text);
+}
+
+void TextAligned(const char* text, float offsetFromStart)
+{
+    SameLine(offsetFromStart);
+    AlignTextToFramePadding();
+    ImGui::TextUnformatted(text, nullptr);
+}
+
+void TextCentered(const char* text)
+{
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(text).x) * 0.5f);
+    ImGui::TextUnformatted(text);
+}
+
+void Centered(float width)
+{
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - width) * 0.5f);
+}
+
+void Centered(const ImVec2& size)
+{
+    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - size.x) * 0.5f);
+}
+
+bool Search(String* buffer, float width)
+{
+    bool result = false;
+    ImGuiEx::PushDefaultInputStyle();
+    ImGui::PushItemWidth(width);
+    ImGui::PushID("Search");
+    if (ImGuiEx::InputResizableString("", buffer, ImGuiInputTextFlags_AlwaysOverwrite | ImGuiInputTextFlags_AutoSelectAll))
+    {
+        result = true;
+    }
+    ImGui::PopID();
+
+    ImGuiEx::PopDefaultInputStyle();
+    ImGui::PopItemWidth();
+
+    return result;
+}
 }

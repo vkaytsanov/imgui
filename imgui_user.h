@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "Types/String.h"
+#include "Types/Containers/ContainersFwd.h"
+#include "Types/BasicTypes.h"
+#include "Types/TypeTraits.h"
 
 class Object;
 class Field;
@@ -13,6 +15,10 @@ struct ImVec2;
 template <typename T>
 class SharedPtr;
 
+namespace ImGui
+{
+void NewLine();
+}
 
 namespace ImGuiEx
 {
@@ -87,7 +93,13 @@ bool Input(SharedPtr<T>& prop, const Field* field)
     return Input(*prop, field);
 }
 
-bool IconButton(const char* icon, const char* tooltip);
+bool IconButton(const char* icon, const ImVec2& size, const char* tooltip);
 
 bool ButtonDisabled(const char* label, const ImVec2& size, bool condition);
+void TextIcon(const char* icon, const char* text);
+void TextAligned(const char* text, float offsetFromStart = 0.0f);
+void TextCentered(const char* text);
+void Centered(float width);
+void Centered(const ImVec2& size);
+bool Search(String* buffer, float width);
 }
