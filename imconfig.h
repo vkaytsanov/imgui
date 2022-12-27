@@ -119,7 +119,7 @@
 
 #define IM_VEC2_CLASS_EXTRA                                                 \
         template <typename T>                                               \
-        ImVec2(const Vector2<T>& f) { x = f.X; y = f.Y;}                    \
+        ImVec2(const Vector2<T>& f) { x = float(f.X); y = float(f.Y);}      \
                                                                             \
         template <typename T>                                               \
         IMGUI_API operator Vector2<T>() const { return Vector2<T>(x,y);     }
@@ -164,6 +164,6 @@ namespace ImGui
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-class Texture;
+class GPUTexture;
 
-#define ImTextureID Texture*
+#define ImTextureID GPUTexture*

@@ -2,6 +2,7 @@
 
 #include "Types/Containers/ContainersFwd.h"
 #include "Types/BasicTypes.h"
+#include "Math/MathFwd.h"
 
 
 class Object;
@@ -16,13 +17,8 @@ class Resource;
 class Texture;
 class Guid;
 class Entity;
+enum CursorType;
 
-template <typename T>
-struct Vector4;
-template <typename T>
-struct Vector3;
-template <typename T>
-struct Vector2;
 template <typename T>
 class SharedPtr;
 
@@ -50,4 +46,5 @@ void TextCenteredInColumn(const char* text);
 void Centered(float width);
 void Centered(const ImVec2& size);
 bool Search(String* buffer, float width);
+CursorType GetMouseCursor();
 }

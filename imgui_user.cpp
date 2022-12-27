@@ -3,6 +3,7 @@
 #include "Types/Color.h"
 #include "Types/String.h"
 #include "Types/Containers/HashMap.h"
+#include "Application/Cursor.h"
 
 
 namespace ImGuiEx
@@ -11,8 +12,8 @@ using namespace ImGui;
 
 void PushDefaultInputStyle()
 {
-	PushStyleColor(ImGuiCol_FrameBg, Color::DARK_GREY);
-	PushStyleColor(ImGuiCol_Border, Color::VERY_DARK_GREY);
+	PushStyleColor(ImGuiCol_FrameBg, Color::DarkGrey);
+	PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
 	PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
 	PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
 	PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3.5));
@@ -40,8 +41,8 @@ void PushReadOnly()
 {
     PushItemFlag(ImGuiItemFlags_ReadOnly, true);
     PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    PushStyleColor(ImGuiCol_FrameBg, Color::LIGHT_GREY);
-    PushStyleColor(ImGuiCol_Border, Color::VERY_DARK_GREY);
+    PushStyleColor(ImGuiCol_FrameBg, Color::LightGrey);
+    PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
 }
 
 void PopReadOnly()
@@ -121,8 +122,8 @@ void Tooltip(const char* description)
 
 bool IconButton(const char* icon, const ImVec2& size, const char* description)
 {
-    PushStyleColor(ImGuiCol_Button, Color::LIGHT_GREY);
-    PushStyleColor(ImGuiCol_Border, Color::VERY_DARK_GREY);
+    PushStyleColor(ImGuiCol_Button, Color::LightGrey);
+    PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
     PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
     PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
 
@@ -194,5 +195,25 @@ bool Search(String* buffer, float width)
     ImGui::PopItemWidth();
 
     return result;
+}
+
+CursorType GetMouseCursor()
+{
+    switch (ImGui::GetMouseCursor())
+    {
+    case ImGuiMouseCursor_Arrow:      return Cursor_Arrow;
+    case ImGuiMouseCursor_TextInput:  return Cursor_TextInput;
+    case ImGuiMouseCursor_ResizeAll:  return Cursor_Resize;
+    case ImGuiMouseCursor_ResizeEW:   return Cursor_ResizeEastWest;
+    case ImGuiMouseCursor_ResizeNS:   return Cursor_ResizeNorthSouth;
+    case ImGuiMouseCursor_Hand:       return Cursor_Hand;
+    case ImGuiMouseCursor_NotAllowed: return Cursor_Forbidden;
+    case ImGuiMouseCursor_None:
+        UNREACHED;
+        break;
+    default:
+        NOT_IMPLEMENTED;
+    }
+    return Cursor_Arrow;
 }
 }
