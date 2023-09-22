@@ -1170,10 +1170,6 @@ static void             UpdateViewportPlatformMonitor(ImGuiViewportP* viewport);
 ImGuiContext*   GImGui = NULL;
 #endif
 
-ImVec4::ImVec4(const Color& f) { x = f.R; y = f.G; z = f.B; w = f.A; }
-
-ImVec4::operator Color() const { return Color(x,y,z,w); }
-
 // Memory Allocator functions. Use SetAllocatorFunctions() to change them.
 // - You probably don't want to modify that mid-program, and if you use global/static e.g. ImVector<> instances you may need to keep them accessible during program destruction.
 // - DLL users: read comments above.

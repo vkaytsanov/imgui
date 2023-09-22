@@ -8,6 +8,8 @@
 #include "Math/Math.h"
 #include "Reflection/Enum.h"
 #include "Reflection/Field.h"
+#include "Reflection/Class.h"
+#include "Reflection/Reflection.h"
 #include "Parsers/StringParser.h"
 
 #include <imgui.h>
@@ -127,6 +129,34 @@ bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue)
             if (ImGui::Selectable(iter->Name, isSelected))
             {
                 data = iter->Name;
+                isModified = !isSelected;
+            }
+
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+    return isModified;
+}
+
+bool InputClass(Class* objClass, TmpString& data)
+{
+    bool isModified = false;
+    if (ImGui::BeginCombo("##Class", *data))
+    {
+        Array<Class*> classes;
+        GetClassesOfType(objClass, classes);
+
+        Class* selectedClass = Reflection::GetClass(*data);
+        for (Class* iter : classes)
+        {
+            bool isSelected = iter == selectedClass;
+            if (ImGui::Selectable(iter->GetName(), isSelected))
+            {
+                data = iter->GetName();
                 isModified = !isSelected;
             }
 
@@ -279,6 +309,12 @@ void TextIcon(const char* icon, const char* text)
 
     ImGui::SameLine(0, 4.0f);
     ImGui::TextUnformatted(text);
+}
+
+void TextAligned(const String& text, float offsetFromStart)
+{
+    AlignTextToFramePadding();
+    ImGui::TextUnformatted(text.begin(), text.end() - 1);
 }
 
 void TextAligned(const char* text, float offsetFromStart)

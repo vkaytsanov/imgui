@@ -14,17 +14,25 @@
 
 #pragma once
 
+#include "Types/Color.h"
+#include "Debug/Debug.h"
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
-//#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
-//#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
+#define IM_ASSERT(_EXPR)  ASSERT(_EXPR)
 
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows
 // Using Dear ImGui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
 // DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
 // for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
-//#define IMGUI_API __declspec( dllexport )
-//#define IMGUI_API __declspec( dllimport )
+#include "Core/PlatformDefines.h"
+
+#ifndef IMGUI_API
+    #if defined(IMGUI_EXPORTS)
+        #define IMGUI_API DLLEXPORT
+    #else
+        #define IMGUI_API DLLIMPORT
+    #endif
+#endif
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -123,22 +131,31 @@
 //---- ...Or use Dear ImGui's own very basic math operators.
 //#define IMGUI_DEFINE_MATH_OPERATORS
 
+template <typename T>
+struct Vector4;
+
+template <typename T>
+struct Vector3;
+
+template <typename T>
+struct Vector2;
+
 #define IM_VEC2_CLASS_EXTRA                                                 \
         template <typename T>                                               \
         ImVec2(const Vector2<T>& f) { x = float(f.X); y = float(f.Y);}      \
                                                                             \
         template <typename T>                                               \
-        IMGUI_API operator Vector2<T>() const { return Vector2<T>(x,y);     }
+        operator Vector2<T>() const { return Vector2<T>(x,y);     }
 
 #define IM_VEC4_CLASS_EXTRA                                                 \
-        ImVec4(const Color& f);                                             \
-        IMGUI_API operator Color() const;                                   \
+        ImVec4(const Color& f) { x = f.R; y = f.G; z = f.B; w = f.A; }      \
+        operator Color() const { return Color(x,y,z,w); }                   \
                                                                             \
         template <typename T>                                               \
         ImVec4(const Vector4<T>& f) { x = f.X; y = f.Y; z = f.Z; w = f.W; } \
                                                                             \
         template <typename T>                                               \
-        IMGUI_API operator Vector4<T>() const { return Vector4<T>(x,y,z,w); }
+        operator Vector4<T>() const { return Vector4<T>(x,y,z,w); }
 
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.
 // Your renderer backend will need to support it (most example renderer backends support both 16/32-bit indices).
