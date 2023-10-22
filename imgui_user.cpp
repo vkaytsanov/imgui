@@ -68,8 +68,15 @@ int32 StringResizedCallback(ImGuiInputTextCallbackData* data)
     {
         String* inStr = static_cast<String*>(data->UserData);
         ASSERT(inStr->Data() == data->Buf);
-        inStr->Resize(data->BufTextLen ? data->BufTextLen + 1 : 1);
-        data->Buf = inStr->Data();
+        if (data->BufTextLen)
+        {
+            inStr->Resize(data->BufTextLen + 1);
+            data->Buf = inStr->Data();
+        }
+        else
+        {
+            data->BufTextLen = inStr->Size();
+        }
     }
     return 0;
 }

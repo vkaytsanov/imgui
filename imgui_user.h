@@ -36,6 +36,7 @@ IMGUI_API void PopReadOnly();
 IMGUI_API bool InputText(const char* label, String& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
 IMGUI_API bool InputText(const char* label, TmpString& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
 IMGUI_API bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
+IMGUI_API bool InputResizableString(const char* label, String* inStr, int32 flags);
 IMGUI_API bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue);
 IMGUI_API bool InputClass(Class* objClass, TmpString& data);
 IMGUI_API bool SliderText(const char* label, TmpString& data, const String& minStr, const String& maxStr, Field* field);
