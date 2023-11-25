@@ -62,33 +62,28 @@ void PopReadOnly()
 }
 
 
-int32 StringResizedCallback(ImGuiInputTextCallbackData* data)
+int32 DefaultStringResizedCallback(ImGuiInputTextCallbackData* data)
 {
     if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
     {
         String* inStr = static_cast<String*>(data->UserData);
-        ASSERT(inStr->Data() == data->Buf);
         if (data->BufTextLen)
         {
             inStr->Resize(data->BufTextLen + 1);
             data->Buf = inStr->Data();
         }
-        else
-        {
-            data->BufTextLen = inStr->Size();
-        }
     }
     return 0;
 }
 
-bool InputText(const char* label, String& data, int32 flags)
+bool InputText(const char* label, String& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
 {
-    return ImGui::InputText(label, data.Data(), data.Capacity(), flags);
+    return ImGui::InputText(label, data.Data(), callback ? data.Size() + 1: data.Capacity(), flags, callback, user_data);
 }
 
-bool InputText(const char* label, TmpString& data, int32 flags)
+bool InputText(const char* label, TmpString& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
 {
-    return ImGui::InputText(label, data.Data(), data.Capacity(), flags);
+    return ImGui::InputText(label, data.Data(), callback ? data.Size() + 1 : data.Capacity(), flags, callback, user_data);
 }
 
 bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags)
@@ -243,7 +238,7 @@ bool SliderText(const char* label, TmpString& data, const String& minStr, const 
 
 bool InputResizableString(const char* label, String* inStr, int32 flags)
 {
-    return ImGui::InputText(label, inStr->Data(), inStr->Length() + 1, flags | ImGuiInputTextFlags_CallbackResize, StringResizedCallback, inStr);
+    return ImGui::InputText(label, inStr->Data(), inStr->Length() + 1, flags | ImGuiInputTextFlags_CallbackResize, DefaultStringResizedCallback, inStr);
 }
 
 void Label(const char* text)
@@ -278,7 +273,7 @@ void Tooltip(const String& description)
     if (ImGui::IsItemHovered())
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 4 });
-        ImGui::BeginTooltipEx(ImGuiTooltipFlags_OverridePreviousTooltip, ImGuiWindowFlags_None);
+        ImGui::BeginTooltipEx(ImGuiTooltipFlags_OverridePrevious, ImGuiWindowFlags_None);
 
         ImGui::TextUnformatted(description.begin(), description.end() - 1);
 
@@ -342,6 +337,22 @@ void TextCenteredInColumn(const char* text)
     ImGui::TextUnformatted(text);
 }
 
+void TextColored(StringView<char> text, Color color)
+{
+    ImGui::PushStyleColor(ImGuiCol_Text, color);
+    ImGui::TextUnformatted(text.begin(), text.end());
+    ImGui::PopStyleColor();
+}
+
+void TextKeyValue(StringView<char> key, StringView<char> value)
+{
+    ImGui::TextUnformatted(key.begin(), key.end());
+    ImGui::SameLine();
+    ImGui::TextUnformatted(":");
+    ImGui::SameLine();
+    ImGui::TextUnformatted(value.begin(), value.end());
+}
+
 void Centered(float width)
 {
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - width) * 0.5f);
@@ -379,13 +390,15 @@ CursorType GetMouseCursor()
     case ImGuiMouseCursor_ResizeAll:  return Cursor_Resize;
     case ImGuiMouseCursor_ResizeEW:   return Cursor_ResizeEastWest;
     case ImGuiMouseCursor_ResizeNS:   return Cursor_ResizeNorthSouth;
+    case ImGuiMouseCursor_ResizeNWSE: return Cursor_ResizeNorthWestSouthEast;
+    case ImGuiMouseCursor_ResizeNESW: return Cursor_ResizeNorthEastSouthWest;
     case ImGuiMouseCursor_Hand:       return Cursor_Hand;
     case ImGuiMouseCursor_NotAllowed: return Cursor_Forbidden;
     case ImGuiMouseCursor_None:
         UNREACHED;
         break;
     default:
-        LOG_W("ImGui cursor not implemented!");
+        LOG_W(None, "ImGui cursor not implemented!");
         return Cursor_Arrow;
     }
     return Cursor_Arrow;

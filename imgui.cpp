@@ -944,15 +944,6 @@ CODE
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-<<<<<<< HEAD
-=======
-#include "imgui.h"
-
-
-#include "Types/Color.h"
-#ifndef IMGUI_DISABLE
-
->>>>>>> 52011745 (Update imgui & Migrate imgui to submodule)
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif

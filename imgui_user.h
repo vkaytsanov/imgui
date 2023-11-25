@@ -24,6 +24,8 @@ enum CursorType : uint8;
 template <typename T>
 class SharedPtr;
 
+struct ImGuiInputTextCallbackData;
+
 namespace ImGuiEx
 {
 IMGUI_API void PushDefaultInputStyle();
@@ -33,8 +35,9 @@ IMGUI_API void PopZeroPadding();
 IMGUI_API void PushReadOnly();
 IMGUI_API void PopReadOnly();
 
-IMGUI_API bool InputText(const char* label, String& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
-IMGUI_API bool InputText(const char* label, TmpString& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
+IMGUI_API int32 DefaultStringResizedCallback(ImGuiInputTextCallbackData* data);
+IMGUI_API bool InputText(const char* label, String& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/, int (*callback)(ImGuiInputTextCallbackData*) = nullptr, void* user_data = nullptr);
+IMGUI_API bool InputText(const char* label, TmpString& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/, int (*callback)(ImGuiInputTextCallbackData*) = nullptr, void* user_data = nullptr);
 IMGUI_API bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
 IMGUI_API bool InputResizableString(const char* label, String* inStr, int32 flags);
 IMGUI_API bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue);
@@ -51,6 +54,8 @@ IMGUI_API void TextAligned(const String& text, float offsetFromStart = 0.0f);
 IMGUI_API void TextAligned(const char* text, float offsetFromStart = 0.0f);
 IMGUI_API void TextCentered(const char* text);
 IMGUI_API void TextCenteredInColumn(const char* text);
+IMGUI_API void TextColored(StringView<char> text, Color color);
+IMGUI_API void TextKeyValue(StringView<char> key, StringView<char> value);
 IMGUI_API void Centered(float width);
 IMGUI_API void Centered(const ImVec2& size);
 IMGUI_API bool Search(String* buffer, float width);
