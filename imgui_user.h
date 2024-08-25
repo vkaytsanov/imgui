@@ -39,7 +39,7 @@ IMGUI_API int32 DefaultStringResizedCallback(ImGuiInputTextCallbackData* data);
 IMGUI_API bool InputText(const char* label, String& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/, int (*callback)(ImGuiInputTextCallbackData*) = nullptr, void* user_data = nullptr);
 IMGUI_API bool InputText(const char* label, TmpString& data, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/, int (*callback)(ImGuiInputTextCallbackData*) = nullptr, void* user_data = nullptr);
 IMGUI_API bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
-IMGUI_API bool InputResizableString(const char* label, String* inStr, int32 flags);
+IMGUI_API bool InputResizableString(const char* label, String* inStr, int32 flags = 16 | 32 /*ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue*/);
 IMGUI_API bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue);
 IMGUI_API bool InputClass(Class* objClass, TmpString& data);
 IMGUI_API bool SliderText(const char* label, TmpString& data, const String& minStr, const String& maxStr, Field* field);
@@ -60,6 +60,7 @@ IMGUI_API void Centered(float width);
 IMGUI_API void Centered(const ImVec2& size);
 IMGUI_API bool Search(String* buffer, float width);
 IMGUI_API CursorType GetMouseCursor();
+IMGUI_API void FullscreenTexture(ImTextureID texture);
 
 struct IMGUI_API IDScope
 {
@@ -67,4 +68,11 @@ struct IMGUI_API IDScope
     IDScope(int int_id);
     ~IDScope();
 };
+
+struct IMGUI_API StyleScope
+{
+    StyleScope(int idx, Vector2f val);
+    ~StyleScope();
+};
+
 }

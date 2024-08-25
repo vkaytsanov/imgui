@@ -11,6 +11,7 @@
 #include "Reflection/Class.h"
 #include "Reflection/Reflection.h"
 #include "Parsers/StringParser.h"
+#include "Graphics/Graphics.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -96,16 +97,11 @@ bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32
     ImGui::PushID(&datas);
     for (uint32 i = 0; i < datas.Size(); i++)
     {
-        if (i > 0)
-        {
-            ImGui::SameLine(0.0f);
-        }
-
         ImGui::BeginGroup();
         {
             ImGuiEx::IDScope IDScope(&labels[i]);
-            ImGui::SetNextItemWidth(charWidth);
 
+            ImGui::SetNextItemWidth(charWidth);
             ImGuiEx::TextAligned(labels[i]);
 
             ImGui::SameLine(0.0f);
@@ -114,6 +110,8 @@ bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32
             isModified |= InputText("##Label", datas[i], flags);
         }
         ImGui::EndGroup();
+
+        ImGui::SameLine(0.0f);
     }
     ImGui::PopID();
     ImGui::EndGroup();
@@ -404,6 +402,28 @@ CursorType GetMouseCursor()
     return Cursor_Arrow;
 }
 
+IMGUI_API void FullscreenTexture(ImTextureID texture)
+{
+    Vector2f minUV;
+    Vector2f maxUV;
+    if (GGraphics->GetType() == Graphics_OpenGL)
+    {
+        minUV = { 0, 1 };
+        maxUV = { 1, 0 };
+    }
+    else
+    {
+        minUV = { 0, 0 };
+        maxUV = { 1, 1 };
+    }
+
+    ImGui::GetWindowDrawList()->AddImage(texture,
+                                         ImGui::GetWindowContentRegionMin() + ImGui::GetWindowPos(),
+                                         ImGui::GetWindowContentRegionMax() + ImGui::GetWindowPos(),
+                                         minUV,
+                                         maxUV);
+}
+
 IDScope::IDScope(const void* ptr_id)
 {
     ImGui::PushID(ptr_id);
@@ -417,6 +437,16 @@ IDScope::IDScope(int int_id)
 IDScope::~IDScope()
 {
     ImGui::PopID();
+}
+
+StyleScope::StyleScope(int idx, Vector2f val)
+{
+    ImGui::PushStyleVar(idx, val);
+}
+
+StyleScope::~StyleScope()
+{
+    ImGui::PopStyleVar();
 }
 
 }
