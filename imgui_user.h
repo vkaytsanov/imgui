@@ -43,6 +43,13 @@ IMGUI_API bool InputResizableString(const char* label, String* inStr, int32 flag
 IMGUI_API bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue);
 IMGUI_API bool InputClass(Class* objClass, TmpString& data);
 IMGUI_API bool SliderText(const char* label, TmpString& data, const String& minStr, const String& maxStr, Field* field);
+IMGUI_API bool InputCombo(Class* objClass, Object*& inOutCurrentObject);
+
+template <typename ClassType>
+bool InputCombo(ClassType*& inOutCurrentObject)
+{
+    return InputCombo(ClassType::GetStaticClass(), (Object*&)inOutCurrentObject);
+}
 
 IMGUI_API void Label(const char* text);
 IMGUI_API void Tooltip(const String& description);
@@ -58,6 +65,8 @@ IMGUI_API void TextColored(StringView<char> text, Color color);
 IMGUI_API void TextKeyValue(StringView<char> key, StringView<char> value);
 IMGUI_API void Centered(float width);
 IMGUI_API void Centered(const ImVec2& size);
+IMGUI_API void OffsetCursorPos(const ImVec2& size);
+IMGUI_API void OffsetCursorPosX(float width);
 IMGUI_API bool Search(String* buffer, float width);
 IMGUI_API CursorType GetMouseCursor();
 IMGUI_API void FullscreenTexture(ImTextureID texture);

@@ -19,435 +19,471 @@
 
 namespace ImGuiEx
 {
-using namespace ImGui;
+    using namespace ImGui;
 
-void PushDefaultInputStyle()
-{
-	PushStyleColor(ImGuiCol_FrameBg, Color::DarkGrey);
-	PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
-	PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
-	PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
-	PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3.5));
-}
-
-void PopDefaultInputStyle()
-{
-	PopStyleColor(2);
-	PopStyleVar(3);
-}
-
-void PushZeroPadding()
-{
-    PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-    PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
-}
-
-void PopZeroPadding()
-{
-    PopStyleVar(3);
-}
-
-void PushReadOnly()
-{
-    PushItemFlag(ImGuiItemFlags_ReadOnly, true);
-    PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    PushStyleColor(ImGuiCol_FrameBg, Color::LightGrey);
-    PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
-}
-
-void PopReadOnly()
-{
-    PopStyleColor(3);
-    PopItemFlag();
-}
-
-
-int32 DefaultStringResizedCallback(ImGuiInputTextCallbackData* data)
-{
-    if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+    void PushDefaultInputStyle()
     {
-        String* inStr = static_cast<String*>(data->UserData);
-        if (data->BufTextLen)
-        {
-            inStr->Resize(data->BufTextLen + 1);
-            data->Buf = inStr->Data();
-        }
+        PushStyleColor(ImGuiCol_FrameBg, Color::DarkGrey);
+        PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
+        PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
+        PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
+        PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 3.5));
     }
-    return 0;
-}
 
-bool InputText(const char* label, String& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
-{
-    return ImGui::InputText(label, data.Data(), callback ? data.Size() + 1: data.Capacity(), flags, callback, user_data);
-}
-
-bool InputText(const char* label, TmpString& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
-{
-    return ImGui::InputText(label, data.Data(), callback ? data.Size() + 1 : data.Capacity(), flags, callback, user_data);
-}
-
-bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags)
-{
-    bool isModified = false;
-    float charWidth = ImGui::CalcTextSize(labels[0]).x;
-    float inputWidth = Math::Min(((ImGui::CalcItemWidth() / float(datas.Size())) - (datas.Size() * charWidth)), 60.f);
-
-    ImGui::BeginGroup();
-    ImGui::PushID(&datas);
-    for (uint32 i = 0; i < datas.Size(); i++)
+    void PopDefaultInputStyle()
     {
-        ImGui::BeginGroup();
-        {
-            ImGuiEx::IDScope IDScope(&labels[i]);
+        PopStyleColor(2);
+        PopStyleVar(3);
+    }
 
-            ImGui::SetNextItemWidth(charWidth);
-            ImGuiEx::TextAligned(labels[i]);
+    void PushZeroPadding()
+    {
+        PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+    }
+
+    void PopZeroPadding()
+    {
+        PopStyleVar(3);
+    }
+
+    void PushReadOnly()
+    {
+        PushItemFlag(ImGuiItemFlags_ReadOnly, true);
+        PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+        PushStyleColor(ImGuiCol_FrameBg, Color::LightGrey);
+        PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
+    }
+
+    void PopReadOnly()
+    {
+        PopStyleColor(3);
+        PopItemFlag();
+    }
+
+
+    int32 DefaultStringResizedCallback(ImGuiInputTextCallbackData* data)
+    {
+        if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+        {
+            String* inStr = static_cast<String*>(data->UserData);
+            if (data->BufTextLen)
+            {
+                inStr->Resize(data->BufTextLen);
+                data->Buf = inStr->Data();
+            }
+        }
+        return 0;
+    }
+
+    bool InputText(const char* label, String& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
+    {
+        return ImGui::InputText(label, data.Data(), data.Size(), flags, callback, user_data);
+    }
+
+    bool InputText(const char* label, TmpString& data, int32 flags, int (*callback)(ImGuiInputTextCallbackData*), void* user_data)
+    {
+        return ImGui::InputText(label, data.Data(), data.Size(), flags, callback, user_data);
+    }
+
+    bool InputTextN(ArrayView<const char*> labels, ArrayView<TmpString> datas, int32 flags)
+    {
+        bool isModified = false;
+        float charWidth = ImGui::CalcTextSize(labels[0]).x;
+        float inputWidth = Math::Min(((ImGui::CalcItemWidth() / float(datas.Size())) - (datas.Size() * charWidth)), 60.f);
+
+        ImGui::BeginGroup();
+        ImGui::PushID(&datas);
+        for (uint32 i = 0; i < datas.Size(); i++)
+        {
+            ImGui::BeginGroup();
+            {
+                ImGuiEx::IDScope IDScope(&labels[i]);
+
+                ImGui::SetNextItemWidth(charWidth);
+                ImGuiEx::TextAligned(labels[i]);
+
+                ImGui::SameLine(0.0f);
+                ImGui::SetNextItemWidth(inputWidth);
+
+                isModified |= InputText("##Label", datas[i], flags);
+            }
+            ImGui::EndGroup();
 
             ImGui::SameLine(0.0f);
-            ImGui::SetNextItemWidth(inputWidth);
-
-            isModified |= InputText("##Label", datas[i], flags);
         }
+        ImGui::PopID();
         ImGui::EndGroup();
-
-        ImGui::SameLine(0.0f);
+        return isModified;
     }
-    ImGui::PopID();
-    ImGui::EndGroup();
-    return isModified;
-}
 
-bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue)
-{
-    bool isModified = false;
-    if (ImGui::BeginCombo("##Enum", *data))
+    bool InputEnum(const Enum* enumClass, TmpString& data, int64 currentValue)
     {
-        for (EnumIterator iter(enumClass); iter; ++iter)
+        bool isModified = false;
+        if (ImGui::BeginCombo("##Enum", *data))
         {
-            bool isSelected = iter->Value == currentValue;
-            if (ImGui::Selectable(iter->Name, isSelected))
+            for (EnumIterator iter(enumClass); iter; ++iter)
             {
-                data = iter->Name;
-                isModified = !isSelected;
-            }
+                bool isSelected = iter->Value == currentValue;
+                if (ImGui::Selectable(iter->Name, isSelected))
+                {
+                    data = iter->Name;
+                    isModified = !isSelected;
+                }
 
-            if (isSelected)
-            {
-                ImGui::SetItemDefaultFocus();
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
             }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
+        return isModified;
     }
-    return isModified;
-}
 
-bool InputClass(Class* objClass, TmpString& data)
-{
-    bool isModified = false;
-    if (ImGui::BeginCombo("##Class", *data))
+    bool InputClass(Class* objClass, TmpString& data)
     {
-        Array<Class*> classes;
-        GetClassesOfType(objClass, classes);
-
-        Class* selectedClass = Reflection::GetClass(*data);
-        for (Class* iter : classes)
+        bool isModified = false;
+        if (ImGui::BeginCombo("##Class", *data))
         {
-            bool isSelected = iter == selectedClass;
-            if (ImGui::Selectable(iter->GetName(), isSelected))
-            {
-                data = iter->GetName();
-                isModified = !isSelected;
-            }
+            Array<Class*> classes;
+            GetClassesOfType(objClass, classes);
 
-            if (isSelected)
+            Class* selectedClass = Reflection::GetClass(*data);
+            for (Class* iter : classes)
             {
-                ImGui::SetItemDefaultFocus();
+                bool isSelected = iter == selectedClass;
+                if (ImGui::Selectable(iter->GetName(), isSelected))
+                {
+                    data = iter->GetName();
+                    isModified = !isSelected;
+                }
+
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
             }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
-    }
-    return isModified;
-}
-
-template <typename T>
-bool SliderTextTyped(ImGuiDataType_ dataType, const char* label, TmpString& data, const String& minStr, const String& maxStr)
-{
-    T value, min, max;
-    ENSURE(StringParser::ParseNumber(minStr, min));
-    ENSURE(StringParser::ParseNumber(maxStr, max));
-    ENSURE(StringParser::ParseNumber(data, value));
-    bool isModified = ImGui::SliderScalar(label, dataType, &value, &min, &max);
-    if (isModified)
-    {
-        data = value;
-    }
-    return isModified;
-}
-
-bool SliderText(const char* label, TmpString& data, const String& minStr, const String& maxStr, Field* field)
-{
-    if (field->Is<Int8Field>())
-    {
-        return SliderTextTyped<int8>(ImGuiDataType_S8, label, data, minStr, maxStr);
-    }
-    if (field->Is<UInt8Field>())
-    {
-        return SliderTextTyped<uint8>(ImGuiDataType_U8, label, data, minStr, maxStr);
+        return isModified;
     }
 
-    if (field->Is<Int16Field>())
+    template <typename T>
+    bool SliderTextTyped(ImGuiDataType_ dataType, const char* label, TmpString& data, const String& minStr, const String& maxStr)
     {
-        return SliderTextTyped<int16>(ImGuiDataType_S16, label, data, minStr, maxStr);
-    }
-    if (field->Is<UInt16Field>())
-    {
-        return SliderTextTyped<uint16>(ImGuiDataType_U16, label, data, minStr, maxStr);
-    }
-
-    if (field->Is<Int32Field>())
-    {
-        return SliderTextTyped<int32>(ImGuiDataType_S32, label, data, minStr, maxStr);
-    }
-    if (field->Is<UInt32Field>())
-    {
-        return SliderTextTyped<uint32>(ImGuiDataType_U32, label, data, minStr, maxStr);
+        T value, min, max;
+        ENSURE(StringParser::ParseNumber(minStr, min));
+        ENSURE(StringParser::ParseNumber(maxStr, max));
+        ENSURE(StringParser::ParseNumber(data, value));
+        bool isModified = ImGui::SliderScalar(label, dataType, &value, &min, &max);
+        if (isModified)
+        {
+            data = value;
+        }
+        return isModified;
     }
 
-    if (field->Is<Int64Field>())
+    bool SliderText(const char* label, TmpString& data, const String& minStr, const String& maxStr, Field* field)
     {
-        return SliderTextTyped<int64>(ImGuiDataType_S64, label, data, minStr, maxStr);
+        if (field->Is<Int8Field>())
+        {
+            return SliderTextTyped<int8>(ImGuiDataType_S8, label, data, minStr, maxStr);
+        }
+        if (field->Is<UInt8Field>())
+        {
+            return SliderTextTyped<uint8>(ImGuiDataType_U8, label, data, minStr, maxStr);
+        }
+
+        if (field->Is<Int16Field>())
+        {
+            return SliderTextTyped<int16>(ImGuiDataType_S16, label, data, minStr, maxStr);
+        }
+        if (field->Is<UInt16Field>())
+        {
+            return SliderTextTyped<uint16>(ImGuiDataType_U16, label, data, minStr, maxStr);
+        }
+
+        if (field->Is<Int32Field>())
+        {
+            return SliderTextTyped<int32>(ImGuiDataType_S32, label, data, minStr, maxStr);
+        }
+        if (field->Is<UInt32Field>())
+        {
+            return SliderTextTyped<uint32>(ImGuiDataType_U32, label, data, minStr, maxStr);
+        }
+
+        if (field->Is<Int64Field>())
+        {
+            return SliderTextTyped<int64>(ImGuiDataType_S64, label, data, minStr, maxStr);
+        }
+        if (field->Is<UInt64Field>())
+        {
+            return SliderTextTyped<uint64>(ImGuiDataType_U64, label, data, minStr, maxStr);
+        }
+
+        if (field->Is<FloatField>())
+        {
+            return SliderTextTyped<float>(ImGuiDataType_Float, label, data, minStr, maxStr);
+        }
+        if (field->Is<DoubleField>())
+        {
+            return SliderTextTyped<double>(ImGuiDataType_Double, label, data, minStr, maxStr);
+        }
+        return false;
     }
-    if (field->Is<UInt64Field>())
+
+    bool InputCombo(Class* objClass, Object*& inOutCurrentObject)
     {
-        return SliderTextTyped<uint64>(ImGuiDataType_U64, label, data, minStr, maxStr);
+        bool hasChanged = false;
+
+        TmpString previewValue = inOutCurrentObject ? *inOutCurrentObject->GetHName() : TmpString::Printf("None (%s)", *objClass->GetHName());
+        if (ImGui::BeginCombo("", *previewValue))
+        {
+            for (MultiObjectIterator iter(objClass); iter; ++iter)
+            {
+                bool isSelected = *iter == inOutCurrentObject;
+                if (ImGui::Selectable(*iter->GetHName(), isSelected))
+                {
+                    inOutCurrentObject = *iter;
+                    hasChanged = true;
+                }
+
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        return hasChanged;
     }
 
-    if (field->Is<FloatField>())
+    bool InputResizableString(const char* label, String* inStr, int32 flags)
     {
-        return SliderTextTyped<float>(ImGuiDataType_Float, label, data, minStr, maxStr);
+        return ImGui::InputText(label, inStr->Data(), inStr->Length(), flags | ImGuiInputTextFlags_CallbackResize, DefaultStringResizedCallback, inStr);
     }
-    if (field->Is<DoubleField>())
+
+    void Label(const char* text)
     {
-        return SliderTextTyped<double>(ImGuiDataType_Double, label, data, minStr, maxStr);
+        ImGuiWindow* window = GetCurrentWindow();
+        float fullWidth = GetContentRegionAvail().x;
+        ImVec2 textSize = ImGui::CalcTextSize(text);
+        ImRect textRect;
+        textRect.Min = ImGui::GetCursorScreenPos();
+        textRect.Max = textRect.Min + ImVec2(fullWidth * 0.3f, textSize.y);
+
+        ImGui::AlignTextToFramePadding();
+        textRect.Min.y += window->DC.CurrLineTextBaseOffset;
+        textRect.Max.y += window->DC.CurrLineTextBaseOffset;
+
+        ImGui::ItemSize(textRect);
+        if (ImGui::ItemAdd(textRect, window->GetID(text)))
+        {
+            ImGui::RenderTextEllipsis(ImGui::GetWindowDrawList(),
+                textRect.Min,
+                textRect.Max,
+                textRect.Max.x,
+                textRect.Max.x,
+                text,
+                nullptr,
+                &textSize);
+        }
     }
-    return false;
-}
 
-bool InputResizableString(const char* label, String* inStr, int32 flags)
-{
-    return ImGui::InputText(label, inStr->Data(), inStr->Length() + 1, flags | ImGuiInputTextFlags_CallbackResize, DefaultStringResizedCallback, inStr);
-}
-
-void Label(const char* text)
-{
-    ImGuiWindow* window = GetCurrentWindow();
-    float fullWidth = GetContentRegionAvail().x;
-    ImVec2 textSize = ImGui::CalcTextSize(text);
-    ImRect textRect;
-    textRect.Min = ImGui::GetCursorScreenPos();
-    textRect.Max = textRect.Min + ImVec2(fullWidth * 0.3f, textSize.y);
-
-    ImGui::AlignTextToFramePadding();
-    textRect.Min.y += window->DC.CurrLineTextBaseOffset;
-    textRect.Max.y += window->DC.CurrLineTextBaseOffset;
-
-    ImGui::ItemSize(textRect);
-    if (ImGui::ItemAdd(textRect, window->GetID(text)))
+    void Tooltip(const String& description)
     {
-        ImGui::RenderTextEllipsis(ImGui::GetWindowDrawList(),
-                                  textRect.Min,
-                                  textRect.Max,
-                                  textRect.Max.x,
-                                  textRect.Max.x,
-                                  text,
-                                  nullptr,
-                                  &textSize);
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 4 });
+            ImGui::BeginTooltipEx(ImGuiTooltipFlags_OverridePrevious, ImGuiWindowFlags_None);
+
+            ImGui::TextUnformatted(description.begin(), description.end());
+
+            ImGui::EndTooltip();
+            ImGui::PopStyleVar();
+        }
     }
-}
 
-void Tooltip(const String& description)
-{
-    if (ImGui::IsItemHovered())
+    bool IconButton(const char* icon, const ImVec2& size, const char* description)
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 4 });
-        ImGui::BeginTooltipEx(ImGuiTooltipFlags_OverridePrevious, ImGuiWindowFlags_None);
+        PushStyleColor(ImGuiCol_Button, Color::LightGrey);
+        PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
+        PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
+        PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
 
-        ImGui::TextUnformatted(description.begin(), description.end() - 1);
-
-        ImGui::EndTooltip();
-        ImGui::PopStyleVar();
+        bool res = ImGui::Button(icon, size);
+        Tooltip(description);
+        PopStyleVar(2);
+        PopStyleColor(2);
+        return res;
     }
-}
 
-bool IconButton(const char* icon, const ImVec2& size, const char* description)
-{
-    PushStyleColor(ImGuiCol_Button, Color::LightGrey);
-    PushStyleColor(ImGuiCol_Border, Color::VeryDarkGrey);
-    PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
-    PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
-
-    bool res = ImGui::Button(icon, size);
-    Tooltip(description);
-    PopStyleVar(2);
-    PopStyleColor(2);
-	return res;
-}
-
-bool ButtonDisabled(const char* label, const ImVec2& size, bool condition)
-{
-    BeginDisabled(condition);
-    const bool result = ImGui::Button(label, size);
-    EndDisabled();
-    return result;
-}
-
-void TextIcon(const char* icon, const char* text)
-{
-    ImGui::SameLine(0, 4.0f);
-    ImGui::TextUnformatted(icon);
-
-    ImGui::SameLine(0, 4.0f);
-    ImGui::TextUnformatted(text);
-}
-
-void TextAligned(const String& text, float offsetFromStart)
-{
-    AlignTextToFramePadding();
-    ImGui::TextUnformatted(text.begin(), text.end() - 1);
-}
-
-void TextAligned(const char* text, float offsetFromStart)
-{
-    AlignTextToFramePadding();
-    ImGui::TextUnformatted(text, nullptr);
-}
-
-void TextCentered(const char* text)
-{
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(text).x) * 0.5f);
-    ImGui::TextUnformatted(text);
-}
-
-void TextCenteredInColumn(const char* text)
-{
-    ImGui::SetCursorPosX((ImGui::GetColumnWidth() - ImGui::CalcTextSize(text).x) * 0.5f);
-    ImGui::TextUnformatted(text);
-}
-
-void TextColored(StringView<char> text, Color color)
-{
-    ImGui::PushStyleColor(ImGuiCol_Text, color);
-    ImGui::TextUnformatted(text.begin(), text.end());
-    ImGui::PopStyleColor();
-}
-
-void TextKeyValue(StringView<char> key, StringView<char> value)
-{
-    ImGui::TextUnformatted(key.begin(), key.end());
-    ImGui::SameLine();
-    ImGui::TextUnformatted(":");
-    ImGui::SameLine();
-    ImGui::TextUnformatted(value.begin(), value.end());
-}
-
-void Centered(float width)
-{
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - width) * 0.5f);
-}
-
-void Centered(const ImVec2& size)
-{
-    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - size.x) * 0.5f);
-}
-
-bool Search(String* buffer, float width)
-{
-    bool result = false;
-    ImGuiEx::PushDefaultInputStyle();
-    ImGui::PushItemWidth(width);
-    ImGui::PushID("Search");
-    if (ImGuiEx::InputResizableString("", buffer, ImGuiInputTextFlags_AlwaysOverwrite | ImGuiInputTextFlags_AutoSelectAll))
+    bool ButtonDisabled(const char* label, const ImVec2& size, bool condition)
     {
-        result = true;
+        BeginDisabled(condition);
+        const bool result = ImGui::Button(label, size);
+        EndDisabled();
+        return result;
     }
-    ImGui::PopID();
 
-    ImGuiEx::PopDefaultInputStyle();
-    ImGui::PopItemWidth();
-
-    return result;
-}
-
-CursorType GetMouseCursor()
-{
-    switch (ImGui::GetMouseCursor())
+    void TextIcon(const char* icon, const char* text)
     {
-    case ImGuiMouseCursor_Arrow:      return Cursor_Arrow;
-    case ImGuiMouseCursor_TextInput:  return Cursor_TextInput;
-    case ImGuiMouseCursor_ResizeAll:  return Cursor_Resize;
-    case ImGuiMouseCursor_ResizeEW:   return Cursor_ResizeEastWest;
-    case ImGuiMouseCursor_ResizeNS:   return Cursor_ResizeNorthSouth;
-    case ImGuiMouseCursor_ResizeNWSE: return Cursor_ResizeNorthWestSouthEast;
-    case ImGuiMouseCursor_ResizeNESW: return Cursor_ResizeNorthEastSouthWest;
-    case ImGuiMouseCursor_Hand:       return Cursor_Hand;
-    case ImGuiMouseCursor_NotAllowed: return Cursor_Forbidden;
-    case ImGuiMouseCursor_None:
-        UNREACHED;
-        break;
-    default:
-        LOG_W(None, "ImGui cursor not implemented!");
+        ImGui::SameLine(0, 4.0f);
+        ImGui::TextUnformatted(icon);
+
+        ImGui::SameLine(0, 4.0f);
+        ImGui::TextUnformatted(text);
+    }
+
+    void TextAligned(const String& text, float offsetFromStart)
+    {
+        AlignTextToFramePadding();
+        ImGui::TextUnformatted(text.begin(), text.end());
+    }
+
+    void TextAligned(const char* text, float offsetFromStart)
+    {
+        AlignTextToFramePadding();
+        ImGui::TextUnformatted(text, nullptr);
+    }
+
+    void TextCentered(const char* text)
+    {
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(text).x) * 0.5f);
+        ImGui::TextUnformatted(text);
+    }
+
+    void TextCenteredInColumn(const char* text)
+    {
+        ImGui::SetCursorPosX((ImGui::GetColumnWidth() - ImGui::CalcTextSize(text).x) * 0.5f);
+        ImGui::TextUnformatted(text);
+    }
+
+    void TextColored(StringView<char> text, Color color)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, color);
+        ImGui::TextUnformatted(text.begin(), text.end());
+        ImGui::PopStyleColor();
+    }
+
+    void TextKeyValue(StringView<char> key, StringView<char> value)
+    {
+        ImGui::TextUnformatted(key.begin(), key.end());
+        ImGui::SameLine();
+        ImGui::TextUnformatted(":");
+        ImGui::SameLine();
+        ImGui::TextUnformatted(value.begin(), value.end());
+    }
+
+    void Centered(float width)
+    {
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x - width) * 0.5f);
+    }
+
+    void Centered(const ImVec2& size)
+    {
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x - size.x) * 0.5f);
+    }
+
+    void OffsetCursorPos(const ImVec2& size)
+    {
+        ImGui::SetCursorPos(ImGui::GetCursorPos() + size);
+    }
+
+    void OffsetCursorPosX(float width)
+    {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + width);
+    }
+
+    bool Search(String* buffer, float width)
+    {
+        bool result = false;
+        ImGuiEx::PushDefaultInputStyle();
+        ImGui::PushItemWidth(width);
+        ImGui::PushID("Search");
+        if (ImGuiEx::InputResizableString("", buffer, ImGuiInputTextFlags_AlwaysOverwrite | ImGuiInputTextFlags_AutoSelectAll))
+        {
+            result = true;
+        }
+        ImGui::PopID();
+
+        ImGuiEx::PopDefaultInputStyle();
+        ImGui::PopItemWidth();
+
+        return result;
+    }
+
+    CursorType GetMouseCursor()
+    {
+        switch (ImGui::GetMouseCursor())
+        {
+        case ImGuiMouseCursor_Arrow:      return Cursor_Arrow;
+        case ImGuiMouseCursor_TextInput:  return Cursor_TextInput;
+        case ImGuiMouseCursor_ResizeAll:  return Cursor_Resize;
+        case ImGuiMouseCursor_ResizeEW:   return Cursor_ResizeEastWest;
+        case ImGuiMouseCursor_ResizeNS:   return Cursor_ResizeNorthSouth;
+        case ImGuiMouseCursor_ResizeNWSE: return Cursor_ResizeNorthWestSouthEast;
+        case ImGuiMouseCursor_ResizeNESW: return Cursor_ResizeNorthEastSouthWest;
+        case ImGuiMouseCursor_Hand:       return Cursor_Hand;
+        case ImGuiMouseCursor_NotAllowed: return Cursor_Forbidden;
+        case ImGuiMouseCursor_None:
+            UNREACHED;
+            break;
+        default:
+            LOG_W(None, "ImGui cursor not implemented!");
+            return Cursor_Arrow;
+        }
         return Cursor_Arrow;
     }
-    return Cursor_Arrow;
-}
 
-IMGUI_API void FullscreenTexture(ImTextureID texture)
-{
-    Vector2f minUV;
-    Vector2f maxUV;
-    if (GGraphics->GetType() == Graphics_OpenGL)
+    IMGUI_API void FullscreenTexture(ImTextureID texture)
     {
-        minUV = { 0, 1 };
-        maxUV = { 1, 0 };
+        Vector2f minUV;
+        Vector2f maxUV;
+        if (GGraphics->GetType() == Graphics_OpenGL)
+        {
+            minUV = { 0, 1 };
+            maxUV = { 1, 0 };
+        }
+        else
+        {
+            minUV = { 0, 0 };
+            maxUV = { 1, 1 };
+        }
+
+        ImVec2 currentCursorPos = GetCursorScreenPos();
+        ImGui::GetWindowDrawList()->AddImage(texture,
+                                            currentCursorPos,
+                                            currentCursorPos + GetContentRegionAvail(),
+                                            minUV,
+                                            maxUV);
     }
-    else
+
+    IDScope::IDScope(const void* ptr_id)
     {
-        minUV = { 0, 0 };
-        maxUV = { 1, 1 };
+        ImGui::PushID(ptr_id);
     }
 
-    ImVec2 currentCursorPos = GetCursorScreenPos();
-    ImGui::GetWindowDrawList()->AddImage(texture,
-                                         currentCursorPos,
-                                         currentCursorPos + GetContentRegionAvail(),
-                                         minUV,
-                                         maxUV);
-}
+    IDScope::IDScope(int int_id)
+    {
+        ImGui::PushID(int_id);
+    }
 
-IDScope::IDScope(const void* ptr_id)
-{
-    ImGui::PushID(ptr_id);
-}
+    IDScope::~IDScope()
+    {
+        ImGui::PopID();
+    }
 
-IDScope::IDScope(int int_id)
-{
-    ImGui::PushID(int_id);
-}
+    StyleScope::StyleScope(int idx, Vector2f val)
+    {
+        ImGui::PushStyleVar(idx, val);
+    }
 
-IDScope::~IDScope()
-{
-    ImGui::PopID();
-}
-
-StyleScope::StyleScope(int idx, Vector2f val)
-{
-    ImGui::PushStyleVar(idx, val);
-}
-
-StyleScope::~StyleScope()
-{
-    ImGui::PopStyleVar();
-}
+    StyleScope::~StyleScope()
+    {
+        ImGui::PopStyleVar();
+    }
 
 }
