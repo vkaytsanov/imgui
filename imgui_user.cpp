@@ -417,9 +417,10 @@ IMGUI_API void FullscreenTexture(ImTextureID texture)
         maxUV = { 1, 1 };
     }
 
+    ImVec2 currentCursorPos = GetCursorScreenPos();
     ImGui::GetWindowDrawList()->AddImage(texture,
-                                         ImGui::GetWindowContentRegionMin() + ImGui::GetWindowPos(),
-                                         ImGui::GetWindowContentRegionMax() + ImGui::GetWindowPos(),
+                                         currentCursorPos,
+                                         currentCursorPos + GetContentRegionAvail(),
                                          minUV,
                                          maxUV);
 }

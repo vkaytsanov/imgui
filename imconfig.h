@@ -62,13 +62,8 @@
 //#define IMGUI_ENABLE_TEST_ENGINE                          // Enable imgui_test_engine hooks. Generally set automatically by include "imgui_te_config.h", see Test Engine for details.
 
 //---- Include imgui_user.h at the end of imgui.h as a convenience
-<<<<<<< HEAD
 #define IMGUI_INCLUDE_IMGUI_USER_H
-=======
-// May be convenient for some users to only explicitly include vanilla imgui.h and have extra stuff included.
-//#define IMGUI_INCLUDE_IMGUI_USER_H
 //#define IMGUI_USER_H_FILENAME         "my_folder/my_imgui_user.h"
->>>>>>> 646df390032f64eb03f8b5e2e5cbaf0c8e3bb237
 
 //---- Pack colors to BGRA8 instead of RGBA8 (to avoid converting from one to another)
 //#define IMGUI_USE_BGRA_PACKED_COLOR
