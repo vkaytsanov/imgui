@@ -15,6 +15,7 @@
 #pragma once
 
 #include "Types/Color.h"
+#include "Types/RefPtr.h"
 #include "Debug/Debug.h"
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
@@ -174,6 +175,52 @@ namespace ImGui
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+class GPUResource;
 class GPUTexture;
+class GPUDescriptorSet;
 
-#define ImTextureID GPUTexture*
+struct TextureOrDescriptorSet
+{
+    bool IsTexture = false;
+
+    union
+    {
+        GPUResource* Resource;
+        GPUTexture* Texture;
+        GPUDescriptorSet* DescriptorSet;
+    };
+
+    TextureOrDescriptorSet()
+        : Resource(nullptr)
+    {}
+
+    // (ImTextureID)NULL
+    TextureOrDescriptorSet(int nullCastInImGui)
+        : Resource(nullptr)
+    {}
+
+    TextureOrDescriptorSet(GPUTexture* texture)
+        : Texture(texture)
+        , IsTexture(true)
+    {}
+
+    TextureOrDescriptorSet(GPUDescriptorSet* descriptorSet)
+        : DescriptorSet(descriptorSet)
+    {}
+
+    template <typename T>
+    TextureOrDescriptorSet(const RefPtr<T>& pointer)
+        : TextureOrDescriptorSet(pointer.Get())
+    {}
+
+    bool operator==(const TextureOrDescriptorSet& other)
+    {
+        return Resource == other.Resource;
+    }
+
+    bool operator!=(const TextureOrDescriptorSet& other)
+    {
+        return !(*this == other);
+    }
+};
+#define ImTextureID TextureOrDescriptorSet
