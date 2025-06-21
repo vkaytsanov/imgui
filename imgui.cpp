@@ -1086,6 +1086,7 @@ CODE
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_internal.h"
+#include "imgui_threaded_rendering.h"
 
 // System includes
 #include <stdio.h>      // vsnprintf, sscanf, printf
@@ -4175,6 +4176,12 @@ ImGuiContext::ImGuiContext(ImFontAtlas* shared_font_atlas)
     FramerateSecPerFrameAccum = 0.0f;
     WantCaptureMouseNextFrame = WantCaptureKeyboardNextFrame = WantTextInputNextFrame = -1;
     memset(TempKeychordName, 0, sizeof(TempKeychordName));
+
+    for (int i = 0; i < 3; i++)
+    {
+        Snapshot[i] = IM_NEW(ImDrawDataSnapshot)();
+    }
+    
 }
 
 void ImGui::Initialize()
@@ -4952,6 +4959,12 @@ ImDrawData* ImGui::GetDrawData()
     ImGuiContext& g = *GImGui;
     ImGuiViewportP* viewport = g.Viewports[0];
     return viewport->DrawDataP.Valid ? &viewport->DrawDataP : NULL;
+}
+
+ImDrawData* ImGui::GetBufferedDrawData(int index)
+{
+    ImGuiContext& g = *GImGui;
+    return &g.Snapshot[index]->DrawData;
 }
 
 double ImGui::GetTime()

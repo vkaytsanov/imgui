@@ -2617,6 +2617,7 @@ struct ImGuiContext
     int                     WantTextInputNextFrame;
     ImVector<char>          TempBuffer;                         // Temporary text buffer
     char                    TempKeychordName[64];
+    struct ImDrawDataSnapshot* Snapshot[3];
 
     ImGuiContext(ImFontAtlas* shared_font_atlas);
 };
